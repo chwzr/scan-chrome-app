@@ -3,5 +3,24 @@
     "rules": [
       "polymer-2"
     ]
-  }
+  },
+  "sources": [
+    "_locales/**/*",
+    "assets/*", 
+    "background.js",
+    "bower.json",
+    "manifest.json"
+  ],
+  "builds": [{
+  "name": "bundled-custom",
+  "bundle": {    
+    "stripComments": true,
+    "inlineCss": false,
+    "inlineScripts": false,
+    "sourcemaps": true
+  },
+  "js": {"minify": true},
+  "css": {"minify": true},
+  "html": {"minify": true}
+}]
 }
