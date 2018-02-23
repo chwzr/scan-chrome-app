@@ -1,0 +1,187 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+
+<dom-module id="scan-fire-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+        font-family: 'Roboto';
+        padding: 20px;
+      }
+      paper-progress {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        --paper-progress-active-color: var(--paper-orange-500);
+      }
+
+      paper-progress::shadow #activeProgress {
+        background-color: #2196f3;
+      }
+
+      paper-button,
+      paper-input {
+        -webkit-app-region: no-drag;
+      }
+
+      paper-button {
+        background: var(--paper-blue-grey-500);
+        color: var(--paper-orange-200);
+      }
+
+      h2 {
+        margin: 0;
+        margin-bottom: 12px;
+      }
+
+      paper-input {
+        width: 100%;
+      }
+
+      paper-input {
+        --paper-input-container-focus-color: var(--paper-orange-500);
+        /* background-color: #2196f3; */
+      }
+
+
+      #content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+      }
+
+      .pb{
+        height: 100%;
+        width: 100px;
+        text-align: center;
+      }
+
+
+
+      :host {
+        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #closeButton{
+        position: fixed;
+        top: 0;
+        right: 0;
+        margin: 0;
+        background: none;
+        text-align: right;
+        color: var(--paper-orange-500);
+      }
+    </style>
+    <h2>Scan Fire 🔥</h2>
+    <div id="content">      
+      <paper-input id="documentName" label="Dateiname"></paper-input>
+      <paper-button class="pb" on-tap="confirm" id="confirmButton">
+        Start Scan
+      </paper-button>
+
+    </div>
+    <img src$="{{doc}}">
+    URL: {{doc}}
+    
+    <paper-button on-tap="close" id="closeButton">
+        Exit
+    </paper-button>
+    <paper-toast id="toast"></paper-toast>
+    <paper-progress id="progressBar" indeterminate hidden class="fit bottom"></paper-progress>
+  
+  
+  
+  </template>
+
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class ScanFireApp extends Polymer.Element {
+      static get is() { return 'scan-fire-app'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'scan-fire-app'
+          }
+        };
+      }
+
+      ready(){
+        super.ready();
+        chrome.app.window.current().show();
+      }
+
+
+      close(){
+        window.close();
+      }
+
+
+      confirm(){
+        this.$.progressBar.hidden = false;
+        this.$.confirmButton.disabled = true;
+
+        var scanProperties = {};
+        //start scan
+        chrome.documentScan.scan(scanProperties, scanResults => {
+
+          this.$.progressBar.hidden = true;
+          this.$.confirmButton.disabled = false;
+
+          let dataUrl = scanResults.dataUrls[0];
+          let mimeType = scanResults.mimeType.split('/')[1];
+          let responseUrl = dataUrl + mimeType;
+          this.set('doc', responseUrl);
+
+          // if (chrome.runtime.lastError) {
+          //   this.$.toast.text = chrome.runtime.lastError.message;
+          //   this.$.toast.show();
+          //   return;
+          // }
+          // this.$.toast.text = this.i18n('successMessage');
+          // this.$.toast.show();
+
+          // var dataUrls = scanResults.dataUrls;
+          // for (var i = 0; i < dataUrls.length; i++) {
+          //   var title = new Date().getTime() + '.' + scanResults.mimeType.split('/')[1];
+          //   if (this.$.documentName.value.trim()) {
+          //     title = this.$.documentName.value.trim() + '_' + title;
+          //   }
+          //   var metadata = {};
+          //   metadata['/' + title] = {
+          //     isDirectory: false,
+          //     name: title,
+          //     size: atob(dataUrls[i].split(',')[1]).length,
+          //     modificationTime: new Date().toString(),
+          //     mimeType: scanResults.mimeType,
+          //     thumbnail: dataUrls[i]
+          //   };
+          //   // Save metadata locally.
+          //   chrome.storage.local.set(metadata, function() {
+          //     if (!chrome.runtime.lastError) {
+          //       chrome.runtime.sendMessage({action: 'mountFileSystem'});
+          //     }
+          //   });
+          // }
+        });
+      }
+
+
+    }
+
+    window.customElements.define(ScanFireApp.is, ScanFireApp);
+  </script>
+</dom-module>
