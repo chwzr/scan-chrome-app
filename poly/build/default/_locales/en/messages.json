@@ -1,0 +1,17 @@
+{
+  "title": {
+    "message": "Scan a document"
+  },
+  "documentNameInputLabel": {
+    "message": "Document name"
+  },
+  "windowClose": {
+    "message": "Close"
+  },
+  "scanConfirm": {
+    "message": "Scan"
+  },
+  "successMessage": {
+    "message": "Success! Check out the Files App."
+  }
+}
